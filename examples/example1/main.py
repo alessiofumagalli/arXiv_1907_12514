@@ -1,11 +1,11 @@
 import numpy as np
 import porepy as pp
 
-import examples.papers.dfn_transport.discretization as compute
+import sys; sys.path.insert(0, "../../src/")
+import discretization as compute
 
-# from examples.papers.dfn_transport.grid_export import grid_export
-
-# from examples.papers.dfn_transport.flux_trace import jump_flux
+# from grid_export import grid_export
+# from flux_trace import jump_flux
 
 
 def bc_flag(g, domain, tol):
@@ -32,7 +32,7 @@ def bc_flag(g, domain, tol):
 
 def main():
 
-    input_folder = "../geometries/example1/"
+    input_folder = "../../geometries/example1/"
 
     # define the discretizations for the Darcy part
     discretizations = compute.get_discr()
