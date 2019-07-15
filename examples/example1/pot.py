@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+
 import numpy as np
 import os
 
@@ -83,7 +84,7 @@ def plot_multiple(file_name, legend, title, num_frac, **kwargs):
             + " "
             + title[1]
             + " - "
-            + " config "
+            + " $C$"
             + str(title[2])
         )
         plt.title(plt_title)
@@ -92,6 +93,36 @@ def plot_multiple(file_name, legend, title, num_frac, **kwargs):
         plt.grid(True)
         plt.legend()
 
+
+# ------------------------------------------------------------------------------#
+
+def plot_mismatch(file_name, legend, title, num_traces, **kwargs):
+
+    data = np.loadtxt(file_name, delimiter=",")
+    trace_label = {0: "$\\Gamma_1$", 1: "$\\Gamma_2$"}
+
+    for trace_id in np.arange(num_traces):
+        fig = plt.figure(trace_id)
+        ax = fig.add_subplot(111)
+
+        d = np.abs(data[:, trace_id + 1])
+        plt.semilogy(data[:, 0], d, label=legend)
+
+        plt_title = (
+            title[0]
+            + " on "
+            + trace_label[trace_id]
+            + " "
+            + title[1]
+            + " - "
+            + " $C$"
+            + str(title[2])
+        )
+        plt.title(plt_title)
+        plt.xlabel("$t$")
+        plt.ylabel("$\\delta \\Phi$")
+        plt.grid(True)
+        plt.legend()
 
 # ------------------------------------------------------------------------------#
 
@@ -104,7 +135,7 @@ def plot_num_cells(data, legend, title):
     plt.figure(0)
     plt.plot(np.arange(data.shape[0]), data[:, -1], label=legend)
     plt.title(title)
-    plt.xlabel("config.")
+    plt.xlabel("$C$")
     plt.ylabel("num. cells")
     plt.grid(True)
     plt.legend()
@@ -143,18 +174,32 @@ def save_multiple(filename, num_frac, folder):
 
 # ------------------------------------------------------------------------------#
 
+def save_multiple_trace(filename, num_traces, folder):
+
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    for trace_id in np.arange(num_traces):
+        plt.figure(trace_id)
+        name = filename + "_trace_" + str(trace_id)
+        plt.savefig(folder + name, bbox_inches="tight")
+        plt.gcf().clear()
+
+
+# ------------------------------------------------------------------------------#
+
 
 def main():
 
     num_simul = 21
     num_frac = 3
+    num_traces = 2
 
-    master_folder = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/tipetut++/Results/example1/"
+    master_folder = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/dfn_transport/tipetut++/Results/example1/"
 
     methods_stefano_1 = ["OPTxfem", "OPTfem"]
     methods_stefano_2 = ["GCmfem"]
     methods_alessio = ["MVEM_UPWIND", "Tpfa_UPWIND", "RT0_UPWIND"]
-    methods_andrea = ["MVEM_VEMSUPG"]
 
     method_reference = "GCmfem"
     reference = {"grid_0": 10, "grid_1": 5, "grid_2": 3.5}
@@ -232,20 +277,6 @@ def main():
                 )
                 plot_multiple(data, method, title, num_frac)
 
-            # Andrea
-            for method in methods_andrea:
-                data = (
-                    folder_in
-                    + method
-                    + "/"
-                    + "Cmean_"
-                    + str(simul + 1)
-                    + "_"
-                    + grid[3]
-                    + ".csv"
-                )
-                plot_multiple(data, method.replace("_", " "), title, num_frac)
-
             # save
             name = grid_label + "_cot_avg_" + str(simul)
             save_multiple(name, num_frac, folder_out)
@@ -311,20 +342,6 @@ def main():
                 )
                 plot_multiple(data, method, title, num_frac)
 
-            # Andrea
-            for method in methods_andrea:
-                data = (
-                    folder_in
-                    + method
-                    + "/"
-                    + "Cmin_"
-                    + str(simul + 1)
-                    + "_"
-                    + grid[3]
-                    + ".csv"
-                )
-                plot_multiple(data, method.replace("_", " "), title, num_frac)
-
             # save
             name = grid_label + "_cot_min_" + str(simul)
             save_multiple(name, num_frac, folder_out)
@@ -389,27 +406,13 @@ def main():
                 )
                 plot_multiple(data, method, title, num_frac)
 
-            # Andrea
-            for method in methods_andrea:
-                data = (
-                    folder_in
-                    + method
-                    + "/"
-                    + "Cmax_"
-                    + str(simul + 1)
-                    + "_"
-                    + grid[3]
-                    + ".csv"
-                )
-                plot_multiple(data, method.replace("_", " "), title, num_frac)
-
             # save
             name = grid_label + "_cot_max_" + str(simul)
             save_multiple(name, num_frac, folder_out)
 
             ###########
 
-            title = "production on " + grid_label + " - config " + str(simul)
+            title = "production on " + grid_label + " - $C$" + str(simul)
 
             # Reference
             data = (
@@ -467,23 +470,32 @@ def main():
                 )
                 plot_single(data, method, title)
 
-            # Andrea
-            for method in methods_andrea:
+            # save
+            name = grid_label + "_outflow_" + str(simul)
+            save_single(name, folder_out)
+
+            ########
+
+            title = ["mismatch", grid_label, simul]
+
+            # Stefano
+            for method in methods_stefano_1:
                 data = (
                     folder_in
                     + method
                     + "/"
-                    + "production_"
+                    + method
+                    + "_mismatch_"
                     + str(simul + 1)
                     + "_"
-                    + grid[3]
+                    + grid[1]
                     + ".csv"
                 )
-                plot_single(data, method.replace("_", " "), title)
+                plot_mismatch(data, method, title, num_traces)
 
             # save
-            name = grid_label + "_outflow_" + str(simul)
-            save_single(name, folder_out)
+            name = grid_label + "_mismatch_" + str(simul)
+            save_multiple_trace(name, num_traces, folder_out)
 
             ########
 
@@ -500,11 +512,6 @@ def main():
 
         for method in methods_stefano_2:
             data = folder_in + method + "/" + method + "_cells_" + grid[2] + ".csv"
-            plot_num_cells(data, method.replace("_", " "), title)
-
-        # Andrea
-        for method in methods_andrea:
-            data = folder_in + method + "/" + "num_cells_" + grid[3] + ".csv"
             plot_num_cells(data, method.replace("_", " "), title)
 
         name = grid_label + "_num_cells"
