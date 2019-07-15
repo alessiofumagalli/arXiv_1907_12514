@@ -77,11 +77,10 @@ def main():
 
     num_frac = 86-7
 
-    master_folder = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/tipetut++/Results/example3/"
+    master_folder = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/dfn_transport/tipetut++/Results/example3/"
 
     methods_stefano = ["OPTfem", "OPTxfem", "GCmfem"]
     methods_alessio = ["MVEM_UPWIND", "Tpfa_UPWIND", "RT0_UPWIND"]
-    methods_andrea = []  # ["MVEM_VEMSUPG"]
 
     cases = {"case_0": ("different", "different", "0.005"), "case_1": ("same", "same", "0.001")}
     cases_label = {"case_0": "different", "case_1": "same"}
@@ -103,11 +102,6 @@ def main():
             data = folder_in + method + "/" + method + "_Cmean_" + case[1] + ".csv"
             plot_multiple(data, method, title, num_frac)
 
-        # Andrea
-        for method in methods_andrea:
-            data = folder_in + method + "/" + "Cmean_" + case[2] + ".csv"
-            plot_multiple(data, method.replace("_", " "), title, num_frac)
-
         # save
         name = case_label + "_cot_avg"
         save_multiple(name, num_frac, folder_out)
@@ -124,11 +118,6 @@ def main():
         for method in methods_stefano:
             data = folder_in + method + "/" + method + "_Cmin_" + case[1] + ".csv"
             plot_multiple(data, method, title, num_frac)
-
-        # Andrea
-        for method in methods_andrea:
-            data = folder_in + method + "/" + "Cmin_" + case[2] + ".csv"
-            plot_multiple(data, method.replace("_", " "), title, num_frac)
 
         # save
         name = case_label + "_cot_min"
@@ -147,11 +136,6 @@ def main():
             data = folder_in + method + "/" + method + "_Cmax_" + case[1] + ".csv"
             plot_multiple(data, method, title, num_frac)
 
-        # Andrea
-        for method in methods_andrea:
-            data = folder_in + method + "/" + "Cmax_" + case[2] + ".csv"
-            plot_multiple(data, method.replace("_", " "), title, num_frac)
-
         # save
         name = case_label + "_cot_max"
         save_multiple(name, num_frac, folder_out)
@@ -168,11 +152,6 @@ def main():
         for method in methods_stefano:
             data = folder_in + method + "/" + method + "_production_" + case[1] + ".csv"
             plot_single(data, method, title)
-
-        # Andrea
-        for method in methods_andrea:
-            data = folder_in + method + "/" + "production_" + case[2] + ".csv"
-            plot_single(data, method.replace("_", " "), title)
 
         # save
         name = case_label + "_outflow"

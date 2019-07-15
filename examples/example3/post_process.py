@@ -114,7 +114,7 @@ def main():
 
     grids = ["different", "same"]
 
-    folder_master = "/home/elle/tmp/tipetut++/example3/"
+    folder_master = "/home/elle/tmp/tipetut++/case3/"
     #folder_master = "./"
     folder_master_out = "./CSV/"
     methods = ["MVEM", "Tpfa", "RT0"]

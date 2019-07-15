@@ -113,8 +113,8 @@ def main():
 
     grids = ["3k", "40k"]
 
-    #folder_master = "/home/elle/simul/example1/"
-    folder_master = "./"
+    folder_master = "/home/elle/tmp/tipetut++/case2/"
+    #folder_master = "./"
     folder_master_out = "./CSV/"
     methods = ["MVEM", "Tpfa", "RT0"]
 
@@ -122,7 +122,7 @@ def main():
         for grid in grids:
 
             folder_in = folder_master + "solution_" + method + "_" + grid + "/"
-            folder_out = folder_master_out + method + "/"
+            folder_out = folder_master_out + method + "_UPWIND/"
 
             # in this file the constant data are saved
             file_in = folder_in + "solution_2_"

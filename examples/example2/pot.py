@@ -9,29 +9,69 @@ plt.rc("font", family="serif")
 plt.rc("font", size=15)
 
 
-def plot_single(file_name, legend, title):
+def plot_single(file_name, legend, title, **kwargs):
 
     data = np.loadtxt(file_name, delimiter=",")
+    reference = kwargs.get("reference", None)
 
-    plt.figure(0)
-    plt.plot(data[:, 0], data[:, 1], label=legend)
+    fig = plt.figure(0)
+    ax = fig.add_subplot(111)
+
+    # if the data is a reference
+    if reference:
+        data_p = data[:, 1] + data[:, 1] * reference / 100
+        plt.plot(data[:, 0], data_p, label=legend, linestyle="--", color="gray")
+        text = "ref + " + str(reference) + "\%"
+        pos = (np.median(data[:, 0]), np.median(data_p))
+        pos_t = (pos[0], pos[1]+5*pos[1]/100)
+        ax.annotate(text, xy=pos, xytext=pos_t)
+
+        data_m = data[:, 1] - data[:, 1] * reference / 100
+        plt.plot(data[:, 0], data_m, label=legend, linestyle="--", color="gray")
+        text = "ref - " + str(reference) + "\%"
+        pos = (np.median(data[:, 0]), np.median(data_m))
+        pos_t = (pos[0], pos[1]-5*pos[1]/100)
+        ax.annotate(text, xy=pos, xytext=pos_t)
+
+    else:
+        plt.plot(data[:, 0], data[:, 1], label=legend)
+
     plt.title(title)
     plt.xlabel("$t$")
     plt.ylabel("$\\theta$")
     plt.grid(True)
     plt.legend()
 
-
 # ------------------------------------------------------------------------------#
 
-
-def plot_multiple(file_name, legend, title, num_frac):
+def plot_multiple(file_name, legend, title, num_frac, **kwargs):
 
     data = np.loadtxt(file_name, delimiter=",")
+    reference = kwargs.get("reference", None)
 
     for frac_id in np.arange(num_frac):
-        plt.figure(frac_id)
-        plt.plot(data[:, 0], data[:, frac_id + 1], label=legend)
+        fig = plt.figure(frac_id)
+        ax = fig.add_subplot(111)
+
+        # if the data is a reference
+        if reference:
+            data_p = data[:, frac_id + 1] + data[:, frac_id + 1] * reference / 100
+            plt.plot(data[:, 0], data_p, label=legend, linestyle="--", color="gray")
+            text = "ref + " + str(reference) + "\%"
+            pos = (np.median(data[:, 0]), np.median(data_p))
+            pos_t = (pos[0], pos[1]+5*pos[1]/100)
+            ax.annotate(text, xy=pos, xytext=pos_t)
+
+            data_m = data[:, frac_id + 1] - data[:, frac_id + 1] * reference / 100
+            plt.plot(data[:, 0], data_m, label=legend, linestyle="--", color="gray")
+            text = "ref - " + str(reference) + "\%"
+            pos = (np.median(data[:, 0]), np.median(data_m))
+            pos_t = (pos[0], pos[1]-5*pos[1]/100)
+            ax.annotate(text, xy=pos, xytext=pos_t)
+
+        else:
+            plt.plot(data[:, 0], data[:, frac_id + 1], label=legend)
+
         plt_title = (
             title[0] + " on " + "$\\Omega_{" + str(frac_id) + "}$" + " " + title[1]
         )
@@ -41,6 +81,33 @@ def plot_multiple(file_name, legend, title, num_frac):
         plt.grid(True)
         plt.legend()
 
+
+# ------------------------------------------------------------------------------#
+
+def plot_mismatch(file_name, legend, title, num_traces, **kwargs):
+
+    data = np.loadtxt(file_name, delimiter=",")
+
+    for trace_id in np.arange(num_traces):
+        fig = plt.figure(trace_id)
+        ax = fig.add_subplot(111)
+
+        d = np.abs(data[:, trace_id + 1])
+        plt.semilogy(data[:, 0], d, label=legend)
+
+        trace_label = "$\\Gamma_{" + str(trace_id) + "}$"
+        plt_title = (
+            title[0]
+            + " on "
+            + trace_label
+            + " "
+            + title[1]
+        )
+        plt.title(plt_title)
+        plt.xlabel("$t$")
+        plt.ylabel("$\\delta \\Phi$")
+        plt.grid(True)
+        plt.legend()
 
 # ------------------------------------------------------------------------------#
 
@@ -72,17 +139,35 @@ def save_multiple(filename, num_frac, folder):
 
 # ------------------------------------------------------------------------------#
 
+def save_multiple_trace(filename, num_traces, folder):
+
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    for trace_id in np.arange(num_traces):
+        plt.figure(trace_id)
+        name = filename + "_trace_" + str(trace_id)
+        plt.savefig(folder + name, bbox_inches="tight")
+        plt.gcf().clear()
+
+
+# ------------------------------------------------------------------------------#
+
 
 def main():
 
     num_frac = 10
+    num_traces = 14
 
-    master_folder = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/tipetut++/Results/example2/"
+    master_folder = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/dfn_transport/tipetut++/Results/example2/"
 
     methods_stefano_1 = ["OPTxfem", "OPTfem"]
     methods_stefano_2 = ["GCmfem"]
     methods_alessio = ["MVEM_UPWIND", "Tpfa_UPWIND", "RT0_UPWIND"]
-    methods_andrea = ["MVEM_VEMSUPG", "MVEM_VEMSUPG_POWERTAU"]
+
+    if_reference = False
+    method_reference = "GCmfem"
+    reference = {"grid_0": 10, "grid_1": 5}
 
     grids = {
         "grid_0": ("3k", "200", "3", "9e-05"),
@@ -97,6 +182,19 @@ def main():
         folder_out = folder_in + "img/"
 
         title = ["avg $\\theta$", grid_label]
+
+        if if_reference:
+            # Reference
+            data = (
+                folder_in
+                + method_reference
+                + "/"
+                + method_reference
+                + "_Cmean_big"
+                + ".csv"
+            )
+            plot_multiple(data, None, title, num_frac, reference=reference[grid_name])
+
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "Cmean_" + grid[0] + ".csv"
@@ -111,11 +209,6 @@ def main():
             data = folder_in + method + "/" + method + "_Cmean_" + grid[2] + ".csv"
             plot_multiple(data, method, title, num_frac)
 
-        # Andrea
-        for method in methods_andrea:
-            data = folder_in + method + "/" + "Cmean_" + grid[3] + ".csv"
-            plot_multiple(data, method.replace("_", " "), title, num_frac)
-
         # save
         name = grid_label + "_cot_avg"
         save_multiple(name, num_frac, folder_out)
@@ -123,6 +216,19 @@ def main():
         ###########
 
         title = ["min $\\theta$", grid_label]
+
+        # Reference
+        if if_reference:
+            data = (
+                folder_in
+                + method_reference
+                + "/"
+                + method_reference
+                + "_Cmin_big"
+                + ".csv"
+            )
+            plot_multiple(data, None, title, num_frac, reference=reference[grid_name])
+
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "Cmin_" + grid[0] + ".csv"
@@ -137,11 +243,6 @@ def main():
             data = folder_in + method + "/" + method + "_Cmin_" + grid[2] + ".csv"
             plot_multiple(data, method, title, num_frac)
 
-        # Andrea
-        for method in methods_andrea:
-            data = folder_in + method + "/" + "Cmin_" + grid[3] + ".csv"
-            plot_multiple(data, method.replace("_", " "), title, num_frac)
-
         # save
         name = grid_label + "_cot_min"
         save_multiple(name, num_frac, folder_out)
@@ -149,6 +250,19 @@ def main():
         ###########
 
         title = ["max $\\theta$", grid_label]
+
+        # Reference
+        if if_reference:
+            data = (
+                folder_in
+                + method_reference
+                + "/"
+                + method_reference
+                + "_Cmax_big"
+                + ".csv"
+            )
+            plot_multiple(data, None, title, num_frac, reference=reference[grid_name])
+
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "Cmax_" + grid[0] + ".csv"
@@ -163,11 +277,6 @@ def main():
             data = folder_in + method + "/" + method + "_Cmax_" + grid[2] + ".csv"
             plot_multiple(data, method, title, num_frac)
 
-        # Andrea
-        for method in methods_andrea:
-            data = folder_in + method + "/" + "Cmax_" + grid[3] + ".csv"
-            plot_multiple(data, method.replace("_", " "), title, num_frac)
-
         # save
         name = grid_label + "_cot_max"
         save_multiple(name, num_frac, folder_out)
@@ -175,6 +284,19 @@ def main():
         ###########
 
         title = "production on " + grid_label
+
+        if if_reference:
+            # Reference
+            data = (
+                folder_in
+                + method_reference
+                + "/"
+                + method_reference
+                + "_production_big"
+                + ".csv"
+            )
+            plot_single(data, None, title, reference=reference[grid_name])
+
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "production_" + grid[0] + ".csv"
@@ -189,15 +311,32 @@ def main():
             data = folder_in + method + "/" + method + "_production_" + grid[2] + ".csv"
             plot_single(data, method, title)
 
-        # Andrea
-        for method in methods_andrea:
-            data = folder_in + method + "/" + "production_" + grid[3] + ".csv"
-            plot_single(data, method.replace("_", " "), title)
-
         # save
         name = grid_label + "_outflow"
         save_single(name, folder_out)
 
+        ###########
+
+        title = ["mismatch", grid_label]
+
+        # Stefano
+        for method in methods_stefano_1:
+            data = (
+                folder_in
+                + method
+                + "/"
+                + method
+                + "_mismatch_"
+                + grid[1]
+                + ".csv"
+            )
+            plot_mismatch(data, method, title, num_traces)
+
+        # save
+        name = grid_label + "_mismatch"
+        save_multiple_trace(name, num_traces, folder_out)
+
+        ########
 
 # ------------------------------------------------------------------------------#
 

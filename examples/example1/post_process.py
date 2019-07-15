@@ -133,9 +133,9 @@ def main():
 
     grids = ["1k", "3k", "10k"]
 
-    #folder_master = "/home/elle/simul/example1/"
-    folder_master = "./"
-    folder_master_out = folder_master + "CSV/"
+    folder_master = "/home/elle/tmp/tipetut++/case1/"
+    #folder_master = "./"
+    folder_master_out = "./CSV/"
     methods = ["MVEM", "Tpfa", "RT0"]
 
     for method in methods:
@@ -145,7 +145,7 @@ def main():
             for simul in np.arange(num_simul):
 
                 folder_in = folder_master + "solution_" + method + "_" + grid + "_" + str(simul+1) + "/"
-                folder_out = folder_master_out + method + "/"
+                folder_out = folder_master_out + method + "_UPWIND/"
 
                 # in this file the constant data are saved
                 file_in = folder_in + "solution_2_"
