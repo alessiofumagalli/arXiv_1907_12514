@@ -49,8 +49,11 @@ def data_flow(gb, discr, model, data, bc_flag):
         zeros = np.zeros(g.num_cells)
         empty = np.empty(0)
 
-        d["frac_num"] = (g.frac_num if g.dim == 2 else -1) * unity
-        d["cell_volumes"] = g.cell_volumes
+        d[pp.STATE] = {}
+        d[pp.STATE]["frac_num"] = (g.frac_num if g.dim == 2 else -1) * unity
+        d["frac_num"] = d[pp.STATE]["frac_num"]
+        d[pp.STATE]["cell_volumes"] = g.cell_volumes
+
         d["is_tangential"] = True
         d["Aavatsmark_transmissibilities"] = True
         d["tol"] = tol
@@ -174,11 +177,11 @@ def flow(gb, discr, param, bc_flag):
     # extract the pressure from the solution
     for g, d in gb:
         if g.dim == 2:
-            d[pressure] = discr_scheme.extract_pressure(g, d[variable], d)
-            d[flux] = discr_scheme.extract_flux(g, d[variable], d)
+            d[pp.STATE][pressure] = discr_scheme.extract_pressure(g, d[pp.STATE][variable], d)
+            d[pp.STATE][flux] = discr_scheme.extract_flux(g, d[pp.STATE][variable], d)
         else:
-            d[pressure] = np.zeros(g.num_cells)
-            d[flux] = np.zeros(g.num_faces)
+            d[pp.STATE][pressure] = np.zeros(g.num_cells)
+            d[pp.STATE][flux] = np.zeros(g.num_faces)
 
     # export the P0 flux reconstruction only for some scheme
     if discr["scheme"] is pp.MVEM or discr["scheme"] is pp.RT0:
@@ -223,7 +226,7 @@ def data_advdiff(gb, model, data, bc_flag):
 
         # Flux
         param_adv[flux_discharge_name] = (
-            data.get("flux_weight", 1) * d[flux_discharge_name]
+            data.get("flux_weight", 1) * d[pp.STATE][flux_discharge_name]
         )
 
         # Source
@@ -270,7 +273,7 @@ def data_advdiff(gb, model, data, bc_flag):
         param_diff = {}
 
         param_adv[flux_discharge_name] = (
-            data.get("flux_weight", 1) * d[flux_mortar_name]
+            data.get("flux_weight", 1) * d[pp.STATE][flux_mortar_name]
         )
 
         param = pp.Parameters(
@@ -441,8 +444,8 @@ def compute_outflow(gb, param):
         index = np.argsort(cells)
         faces, sign = faces[index], sign[index]
 
-        flux = d[param["flux"]].copy()
-        scalar = d[param["scalar"]]
+        flux = d[pp.STATE][param["flux"]].copy()
+        scalar = d[pp.STATE][param["scalar"]]
 
         flux[faces] *= sign
         flux[g.get_internal_faces()] = 0
