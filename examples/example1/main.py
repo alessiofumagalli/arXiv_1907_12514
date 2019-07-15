@@ -51,15 +51,15 @@ def main():
 
         for discr_key, discr in discretizations.items():
 
-            if discr_key == "MVEM":
-                if mesh_size_key == "1k":
-                    mesh_size = 1 / 16
-                elif mesh_size_key == "3k":
-                    mesh_size = 0.9 * np.power(2.0, -4) / 1.55
-                elif mesh_size_key == "10k":
-                    mesh_size = 0.875 * np.power(2.0, -5) / 1.4
-            else:
-                mesh_size = mesh_sizes[mesh_size_key]
+            #if discr_key == "MVEM":
+            #    if mesh_size_key == "1k":
+            #        mesh_size = 1 / 16
+            #    elif mesh_size_key == "3k":
+            #        mesh_size = 0.9 * np.power(2.0, -4) / 1.55
+            #    elif mesh_size_key == "10k":
+            #        mesh_size = 0.875 * np.power(2.0, -5) / 1.4
+            #else:
+            mesh_size = mesh_sizes[mesh_size_key]
 
             mesh_kwargs = {"mesh_size_frac": mesh_size, "mesh_size_min": mesh_size / 20}
 

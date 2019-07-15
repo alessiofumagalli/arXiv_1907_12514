@@ -86,10 +86,10 @@ def main():
 
         for discr_key, discr in discretizations.items():
 
-            if discr_key == "MVEM":
-                mesh_size = 0.17 * 1e2
-            else:
-                mesh_size = 1e2  # np.power(2., -4)
+            #if discr_key == "MVEM":
+            #    mesh_size = 0.17 * 1e2
+            #else:
+            mesh_size = 1e2
 
             mesh_kwargs = {"mesh_size_frac": mesh_size, "mesh_size_min": mesh_size / 20}
 
