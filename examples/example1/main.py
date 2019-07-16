@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import porepy as pp
 
@@ -70,6 +71,8 @@ def main():
                 folder = (
                     "solution_" + discr_key + "_" + mesh_size_key + "_" + str(simul)
                 )
+                if not os.path.exists(folder):
+                    os.makedirs(folder)
 
                 network = pp.fracture_importer.network_3d_from_fab(file_name, tol=tol)
                 gb = network.mesh(mesh_kwargs, dfn=True)
