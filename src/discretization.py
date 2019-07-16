@@ -36,6 +36,21 @@ def get_discr():
 
 # ------------------------------------------------------------------------------#
 
+def get_dof(assembler):
+    # return the dof
+    dof = np.array([0, 0], dtype=np.int)
+
+    for pair, bi in assembler.block_dof.items():
+        g = pair[0]
+        if isinstance(g, pp.Grid):
+            dof[0] += assembler.full_dof[bi]
+        else:  # This is really an edge
+            dof[1] +=  assembler.full_dof[bi]
+
+    return dof
+
+# ------------------------------------------------------------------------------#
+
 
 def data_flow(gb, discr, model, data, bc_flag):
     tol = data["tol"]
@@ -189,6 +204,11 @@ def flow(gb, discr, param, bc_flag):
         param["P0_flux"] = P0_flux
         pp.project_flux(gb, discr_scheme, flux, P0_flux, mortar)
 
+    logger.info("done")
+
+    logger.info("Save dof on file")
+    file_out = param["folder"] + "/dof_flow.csv"
+    np.savetxt(file_out, get_dof(assembler), delimiter=",", fmt="%d")
     logger.info("done")
 
 
@@ -429,6 +449,11 @@ def advdiff(gb, discr, param, bc_flag):
     file_out = param["folder"] + "/outflow.csv"
     data = np.vstack((time, outflow)).T
     np.savetxt(file_out, data, delimiter=",")
+    logger.info("done")
+
+    logger.info("Save dof on file")
+    file_out = param["folder"] + "/dof_transport.csv"
+    np.savetxt(file_out, get_dof(assembler), delimiter=",", fmt="%d")
     logger.info("done")
 
 
