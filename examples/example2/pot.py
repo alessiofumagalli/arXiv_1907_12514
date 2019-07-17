@@ -34,11 +34,16 @@ def plot_single(file_name, legend, title, **kwargs):
         ax.annotate(text, xy=pos, xytext=pos_t)
 
     else:
-        plt.plot(data[:, 0], data[:, 1], label=legend)
+        color = kwargs.get("color", None)
+        if color is None:
+            plt.plot(data[:, 0], data[:, 1], label=legend, alpha=kwargs.get("alpha", 1))
+        else:
+            plt.plot(data[:, 0], data[:, 1], label=legend, alpha=kwargs.get("alpha", 1), color=color)
 
     plt.title(title)
     plt.xlabel("$t$")
-    plt.ylabel("$\\theta$")
+    ylabel = "$" + kwargs.get("ylabel", "\\theta") + "$"
+    plt.ylabel(ylabel)
     plt.grid(True)
     plt.legend()
 
@@ -72,42 +77,46 @@ def plot_multiple(file_name, legend, title, num_frac, **kwargs):
         else:
             plt.plot(data[:, 0], data[:, frac_id + 1], label=legend)
 
+        ylabel = "$" + kwargs.get("ylabel", "\\theta") + "_{\\Omega_{" + str(frac_id) + "}}$"
+
         plt_title = (
             title[0] + " on " + "$\\Omega_{" + str(frac_id) + "}$" + " " + title[1]
         )
         plt.title(plt_title)
         plt.xlabel("$t$")
-        plt.ylabel("$\\theta$")
+        plt.ylabel(ylabel)
         plt.grid(True)
         plt.legend()
 
 
 # ------------------------------------------------------------------------------#
 
-def plot_mismatch(file_name, legend, title, num_traces, **kwargs):
+def plot_mismatch(file_name, title, num_traces, **kwargs):
 
     data = np.loadtxt(file_name, delimiter=",")
+    fig = plt.figure(0)
+    ax = fig.add_subplot(111)
+
+    plt_title = (
+        title[0]
+        + " "
+        + title[1]
+        + " for "
+        + title[2]
+    )
+    plt.title(plt_title)
+    plt.xlabel("$t$")
+    ylabel = "$\\delta \\Phi_{\\Gamma, i}$"
+    plt.ylabel(ylabel)
+    plt.grid(True)
 
     for trace_id in np.arange(num_traces):
-        fig = plt.figure(trace_id)
-        ax = fig.add_subplot(111)
-
         d = np.abs(data[:, trace_id + 1])
-        plt.semilogy(data[:, 0], d, label=legend)
+        label = "$\\delta \\Phi_{\\Gamma, " + str(trace_id) + "}$"
+        #plt.semilogy(data[:, 0], d, label=label)
+        plt.semilogy(data[:, 0], d)
 
-        trace_label = "$\\Gamma_{" + str(trace_id) + "}$"
-        plt_title = (
-            title[0]
-            + " on "
-            + trace_label
-            + " "
-            + title[1]
-        )
-        plt.title(plt_title)
-        plt.xlabel("$t$")
-        plt.ylabel("$\\delta \\Phi$")
-        plt.grid(True)
-        plt.legend()
+    #plt.legend()
 
 # ------------------------------------------------------------------------------#
 
@@ -118,7 +127,7 @@ def save_single(filename, folder, figure_id=0):
         os.makedirs(folder)
 
     plt.figure(figure_id)
-    plt.savefig(folder + filename, bbox_inches="tight")
+    plt.savefig(folder + filename + ".pdf", bbox_inches="tight")
     plt.gcf().clear()
 
 
@@ -133,7 +142,7 @@ def save_multiple(filename, num_frac, folder):
     for frac_id in np.arange(num_frac):
         plt.figure(frac_id)
         name = filename + "_frac_" + str(frac_id)
-        plt.savefig(folder + name, bbox_inches="tight")
+        plt.savefig(folder + name + ".pdf", bbox_inches="tight")
         plt.gcf().clear()
 
 
@@ -144,11 +153,9 @@ def save_multiple_trace(filename, num_traces, folder):
     if not os.path.exists(folder):
         os.makedirs(folder)
 
-    for trace_id in np.arange(num_traces):
-        plt.figure(trace_id)
-        name = filename + "_trace_" + str(trace_id)
-        plt.savefig(folder + name, bbox_inches="tight")
-        plt.gcf().clear()
+    plt.figure(0)
+    plt.savefig(folder + filename + ".pdf", bbox_inches="tight")
+    plt.gcf().clear()
 
 
 # ------------------------------------------------------------------------------#
@@ -165,7 +172,13 @@ def main():
     methods_stefano_2 = ["GCmfem"]
     methods_alessio = ["MVEM_UPWIND", "Tpfa_UPWIND", "RT0_UPWIND"]
 
-    if_reference = False
+    style = lambda s: "$\\textsc{"+s+"}$"
+    label = {"OPTxfem": style("XFEMSUPG"), "OPTfem": style("FEMSUPG"), "GCmfem": style("MFEMSUPG"),
+             "OPTxfemG": style("XFEMSUPG*"), "OPTfemG": style("FEMSUPG*"),
+             "MVEM_UPWIND": style("MVEMUP"), "Tpfa_UPWIND": style("TPFAUP"),
+             "RT0_UPWIND": style("MFEMUP")}
+
+    if_reference = True
     method_reference = "GCmfem"
     reference = {"grid_0": 10, "grid_1": 5}
 
@@ -182,6 +195,7 @@ def main():
         folder_out = folder_in + "img/"
 
         title = ["avg $\\theta$", grid_label]
+        ylabel = "\\overline{\\theta}"
 
         if if_reference:
             # Reference
@@ -193,21 +207,21 @@ def main():
                 + "_Cmean_big"
                 + ".csv"
             )
-            plot_multiple(data, None, title, num_frac, reference=reference[grid_name])
+            plot_multiple(data, None, title, num_frac, reference=reference[grid_name], ylabel=ylabel)
 
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "Cmean_" + grid[0] + ".csv"
-            plot_multiple(data, method.replace("_", " "), title, num_frac)
+            plot_multiple(data, label[method], title, num_frac, ylabel=ylabel)
 
         # Stefano
         for method in methods_stefano_1:
             data = folder_in + method + "/" + method + "_Cmean_" + grid[1] + ".csv"
-            plot_multiple(data, method, title, num_frac)
+            plot_multiple(data, label[method], title, num_frac, ylabel=ylabel)
 
         for method in methods_stefano_2:
             data = folder_in + method + "/" + method + "_Cmean_" + grid[2] + ".csv"
-            plot_multiple(data, method, title, num_frac)
+            plot_multiple(data, label[method], title, num_frac, ylabel=ylabel)
 
         # save
         name = grid_label + "_cot_avg"
@@ -216,6 +230,7 @@ def main():
         ###########
 
         title = ["min $\\theta$", grid_label]
+        ylabel = "\\min {\\theta}"
 
         # Reference
         if if_reference:
@@ -227,21 +242,21 @@ def main():
                 + "_Cmin_big"
                 + ".csv"
             )
-            plot_multiple(data, None, title, num_frac, reference=reference[grid_name])
+            plot_multiple(data, None, title, num_frac, reference=reference[grid_name], ylabel=ylabel)
 
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "Cmin_" + grid[0] + ".csv"
-            plot_multiple(data, method.replace("_", " "), title, num_frac)
+            plot_multiple(data, label[method], title, num_frac, ylabel=ylabel)
 
         # Stefano
         for method in methods_stefano_1:
             data = folder_in + method + "/" + method + "_Cmin_" + grid[1] + ".csv"
-            plot_multiple(data, method, title, num_frac)
+            plot_multiple(data, label[method], title, num_frac, ylabel=ylabel)
 
         for method in methods_stefano_2:
             data = folder_in + method + "/" + method + "_Cmin_" + grid[2] + ".csv"
-            plot_multiple(data, method, title, num_frac)
+            plot_multiple(data, label[method], title, num_frac, ylabel=ylabel)
 
         # save
         name = grid_label + "_cot_min"
@@ -250,6 +265,7 @@ def main():
         ###########
 
         title = ["max $\\theta$", grid_label]
+        ylabel = "\\max {\\theta}"
 
         # Reference
         if if_reference:
@@ -261,21 +277,21 @@ def main():
                 + "_Cmax_big"
                 + ".csv"
             )
-            plot_multiple(data, None, title, num_frac, reference=reference[grid_name])
+            plot_multiple(data, None, title, num_frac, reference=reference[grid_name], ylabel=ylabel)
 
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "Cmax_" + grid[0] + ".csv"
-            plot_multiple(data, method.replace("_", " "), title, num_frac)
+            plot_multiple(data, label[method], title, num_frac, ylabel=ylabel)
 
         # Stefano
         for method in methods_stefano_1:
             data = folder_in + method + "/" + method + "_Cmax_" + grid[1] + ".csv"
-            plot_multiple(data, method, title, num_frac)
+            plot_multiple(data, label[method], title, num_frac, ylabel=ylabel)
 
         for method in methods_stefano_2:
             data = folder_in + method + "/" + method + "_Cmax_" + grid[2] + ".csv"
-            plot_multiple(data, method, title, num_frac)
+            plot_multiple(data, label[method], title, num_frac, ylabel=ylabel)
 
         # save
         name = grid_label + "_cot_max"
@@ -284,6 +300,7 @@ def main():
         ###########
 
         title = "production on " + grid_label
+        ylabel = "\\Pi^{\\rm outflow}"
 
         if if_reference:
             # Reference
@@ -295,21 +312,21 @@ def main():
                 + "_production_big"
                 + ".csv"
             )
-            plot_single(data, None, title, reference=reference[grid_name])
+            plot_single(data, None, title, reference=reference[grid_name], ylabel=ylabel)
 
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "production_" + grid[0] + ".csv"
-            plot_single(data, method.replace("_", " "), title)
+            plot_single(data, label[method], title, ylabel=ylabel)
 
         # Stefano
         for method in methods_stefano_1:
             data = folder_in + method + "/" + method + "_production_" + grid[1] + ".csv"
-            plot_single(data, method, title)
+            plot_single(data, label[method], title, ylabel=ylabel)
 
         for method in methods_stefano_2:
             data = folder_in + method + "/" + method + "_production_" + grid[2] + ".csv"
-            plot_single(data, method, title)
+            plot_single(data, label[method], title, ylabel=ylabel)
 
         # save
         name = grid_label + "_outflow"
@@ -317,7 +334,7 @@ def main():
 
         ###########
 
-        title = ["mismatch", grid_label]
+        title = ["mismatch", grid_label, label[method]]
 
         # Stefano
         for method in methods_stefano_1:
@@ -330,11 +347,11 @@ def main():
                 + grid[1]
                 + ".csv"
             )
-            plot_mismatch(data, method, title, num_traces)
+            plot_mismatch(data, title, num_traces)
 
-        # save
-        name = grid_label + "_mismatch"
-        save_multiple_trace(name, num_traces, folder_out)
+            # save
+            name = grid_label + "_mismatch_" + method
+            save_multiple_trace(name, num_traces, folder_out)
 
         ########
 

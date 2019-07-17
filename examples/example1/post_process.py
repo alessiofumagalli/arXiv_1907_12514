@@ -122,6 +122,12 @@ def num_cells(file_in, num_frac, padding=6):
 
 #------------------------------------------------------------------------------#
 
+def num_dofs(file_in, padding=6):
+    return np.loadtxt(file_in, dtype=np.int, delimiter=",")
+
+#------------------------------------------------------------------------------#
+
+
 def main():
 
     num_simul = 21
@@ -142,6 +148,9 @@ def main():
         for grid in grids:
             # store the number of cells
             num = np.zeros((num_simul, num_frac+1), dtype=np.int)
+            # store the number of dofs (dof + mortar dof)
+            dof_F = np.zeros((num_simul, 2), dtype=np.int)
+            dof_T = np.zeros((num_simul, 2), dtype=np.int)
             for simul in np.arange(num_simul):
 
                 folder_in = folder_master + "solution_" + method + "_" + grid + "_" + str(simul+1) + "/"
@@ -178,6 +187,13 @@ def main():
                 # count number of cells
                 num[simul, :] = num_cells(file_in, num_frac)
 
+                # count number of dofs
+                file_in = folder_in + "dof_flow.csv"
+                dof_F[simul, :] = num_dofs(file_in)
+
+                file_in = folder_in + "dof_transport.csv"
+                dof_T[simul, :] = num_dofs(file_in)
+
                 # copy outflow file
                 file_in = folder_in + "outflow.csv"
                 file_out = folder_out + "production_" + str(simul+1) + "_" + grid + ".csv"
@@ -185,6 +201,12 @@ def main():
 
             file_out = folder_out + "num_cells_" + grid + ".csv"
             np.savetxt(file_out, np.atleast_2d(num), delimiter=',', fmt="%d")
+
+            file_out = folder_out + "numdofF_" + grid + ".csv"
+            np.savetxt(file_out, np.atleast_2d(dof_F), delimiter=',', fmt="%d")
+
+            file_out = folder_out + "numdofT_" + grid + ".csv"
+            np.savetxt(file_out, np.atleast_2d(dof_T), delimiter=',', fmt="%d")
 
 if __name__ == "__main__":
     main()

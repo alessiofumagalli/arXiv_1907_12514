@@ -1,7 +1,7 @@
 from shutil import copyfile
 
-folder_src = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/tipetut++/Results/example1/img/"
-folder_dist = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/tipetut++/Article/Parts/Images/"
+folder_src = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/dfn_transport/tipetut++/Results/example1/img/"
+folder_dist = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/dfn_transport/tipetut++/Article/Parts/Images/"
 
 # the number of cells
 grid = [0, 1, 2]
