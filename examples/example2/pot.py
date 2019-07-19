@@ -45,7 +45,8 @@ def plot_single(file_name, legend, title, **kwargs):
     ylabel = "$" + kwargs.get("ylabel", "\\theta") + "$"
     plt.ylabel(ylabel)
     plt.grid(True)
-    plt.legend()
+    if kwargs.get("do_legend", False):
+        plt.legend()
 
 # ------------------------------------------------------------------------------#
 
@@ -86,7 +87,8 @@ def plot_multiple(file_name, legend, title, num_frac, **kwargs):
         plt.xlabel("$t$")
         plt.ylabel(ylabel)
         plt.grid(True)
-        plt.legend()
+        if kwargs.get("do_legend", False):
+            plt.legend()
 
 
 # ------------------------------------------------------------------------------#
@@ -97,6 +99,10 @@ def plot_mismatch(file_name, title, num_traces, **kwargs):
     fig = plt.figure(0)
     ax = fig.add_subplot(111)
 
+    ylim = kwargs.get("ylim", None)
+    if ylim is not None:
+        ax.set_ylim(ylim)
+
     plt_title = (
         title[0]
         + " "
@@ -106,13 +112,13 @@ def plot_mismatch(file_name, title, num_traces, **kwargs):
     )
     plt.title(plt_title)
     plt.xlabel("$t$")
-    ylabel = "$\\delta \\Phi_{\\Gamma, i}$"
+    ylabel = "$\\delta \\Phi_{\\Gamma}$"
     plt.ylabel(ylabel)
     plt.grid(True)
 
     for trace_id in np.arange(num_traces):
         d = np.abs(data[:, trace_id + 1])
-        label = "$\\delta \\Phi_{\\Gamma, " + str(trace_id) + "}$"
+        label = "trace " + str(trace_id)
         #plt.semilogy(data[:, 0], d, label=label)
         plt.semilogy(data[:, 0], d)
 
@@ -127,7 +133,7 @@ def save_single(filename, folder, figure_id=0):
         os.makedirs(folder)
 
     plt.figure(figure_id)
-    plt.savefig(folder + filename + ".pdf", bbox_inches="tight")
+    plt.savefig(folder + "example2_" + filename + ".pdf", bbox_inches="tight")
     plt.gcf().clear()
 
 
@@ -142,7 +148,7 @@ def save_multiple(filename, num_frac, folder):
     for frac_id in np.arange(num_frac):
         plt.figure(frac_id)
         name = filename + "_frac_" + str(frac_id)
-        plt.savefig(folder + name + ".pdf", bbox_inches="tight")
+        plt.savefig(folder + "example2_" + name + ".pdf", bbox_inches="tight")
         plt.gcf().clear()
 
 
@@ -154,7 +160,7 @@ def save_multiple_trace(filename, num_traces, folder):
         os.makedirs(folder)
 
     plt.figure(0)
-    plt.savefig(folder + filename + ".pdf", bbox_inches="tight")
+    plt.savefig(folder + "example2_" + filename + ".pdf", bbox_inches="tight")
     plt.gcf().clear()
 
 
@@ -334,10 +340,13 @@ def main():
 
         ###########
 
-        title = ["mismatch", grid_label, label[method]]
 
         # Stefano
         for method in methods_stefano_1:
+
+            title = ["mismatch", grid_label, label[method]]
+            ylim = [1e-10, 1e-3]
+
             data = (
                 folder_in
                 + method
@@ -347,7 +356,7 @@ def main():
                 + grid[1]
                 + ".csv"
             )
-            plot_mismatch(data, title, num_traces)
+            plot_mismatch(data, title, num_traces, ylim=ylim)
 
             # save
             name = grid_label + "_mismatch_" + method

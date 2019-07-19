@@ -46,7 +46,8 @@ def plot_single(file_name, legend, title, **kwargs):
     ylabel = "$" + kwargs.get("ylabel", "\\theta") + "$"
     plt.ylabel(ylabel)
     plt.grid(True)
-    plt.legend()
+    if kwargs.get("do_legend", False):
+        plt.legend()
 
 
 # ------------------------------------------------------------------------------#
@@ -98,7 +99,8 @@ def plot_multiple(file_name, legend, title, num_frac, **kwargs):
         plt.xlabel("$t$")
         plt.ylabel(ylabel)
         plt.grid(True)
-        plt.legend()
+        if kwargs.get("do_legend", False):
+            plt.legend()
 
 
 # ------------------------------------------------------------------------------#
@@ -108,6 +110,10 @@ def plot_mismatch(file_name, title, num_traces, **kwargs):
     data = np.loadtxt(file_name, delimiter=",")
     fig = plt.figure(0)
     ax = fig.add_subplot(111)
+
+    ylim = kwargs.get("ylim", None)
+    if ylim is not None:
+        ax.set_ylim(ylim)
 
     plt_title = (
         title[0]
@@ -121,13 +127,13 @@ def plot_mismatch(file_name, title, num_traces, **kwargs):
     )
     plt.title(plt_title)
     plt.xlabel("$t$")
-    ylabel = "$\\delta \\Phi_{\\Gamma, i}$"
+    ylabel = "$\\delta \\Phi_{\\Gamma}$"
     plt.ylabel(ylabel)
     plt.grid(True)
 
     for trace_id in np.arange(num_traces):
         d = np.abs(data[:, trace_id + 1])
-        label = "$\\delta \\Phi_{\\Gamma, " + str(trace_id) + "}$"
+        label = "trace " + str(trace_id)
         plt.semilogy(data[:, 0], d, label=label)
 
     plt.legend()
@@ -146,7 +152,7 @@ def plot_num_cells(data, legend, title):
     plt.xlabel("$C$")
     plt.ylabel("num. cells")
     plt.grid(True)
-    plt.legend()
+    #plt.legend()
     # useful to plot the legend as flat
     # ncol = 5 # number of methods
     # plt.legend(bbox_to_anchor=(1, -0.2), ncol=5)
@@ -166,11 +172,21 @@ def plot_num_dofs(data, legend, title, **kwargs):
     plt.xlabel("$C$")
     plt.ylabel("num. dof")
     plt.grid(True)
-    plt.legend()
+    #plt.legend()
     # useful to plot the legend as flat
     # ncol = 5 # number of methods
     # plt.legend(bbox_to_anchor=(1, -0.2), ncol=5)
 
+
+# ------------------------------------------------------------------------------#
+
+def plot_legend(legend, num_methods):
+
+    plt.figure(0)
+    plt.plot(np.zeros(1), label=legend)
+    # useful to plot the legend as flat
+    ncol = 5 # number of methods
+    plt.legend(bbox_to_anchor=(1, -0.2), ncol=num_methods)
 
 # ------------------------------------------------------------------------------#
 
@@ -181,7 +197,7 @@ def save_single(filename, folder, figure_id=0):
         os.makedirs(folder)
 
     plt.figure(figure_id)
-    plt.savefig(folder + filename + ".pdf", bbox_inches="tight")
+    plt.savefig(folder + "example1_" + filename + ".pdf", bbox_inches="tight")
     plt.gcf().clear()
 
 
@@ -196,7 +212,7 @@ def save_multiple(filename, num_frac, folder):
     for frac_id in np.arange(num_frac):
         plt.figure(frac_id)
         name = filename + "_frac_" + str(frac_id)
-        plt.savefig(folder + name + ".pdf", bbox_inches="tight")
+        plt.savefig(folder + "example1_" + name + ".pdf", bbox_inches="tight")
         plt.gcf().clear()
 
 
@@ -208,8 +224,20 @@ def save_multiple_trace(filename, num_traces, folder):
         os.makedirs(folder)
 
     plt.figure(0)
+    plt.savefig(folder + "example1_" + filename + ".pdf", bbox_inches="tight")
+    plt.gcf().clear()
+
+# ------------------------------------------------------------------------------#
+
+def save_label(filename, folder, figure_id=0):
+
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    plt.figure(figure_id)
     plt.savefig(folder + filename + ".pdf", bbox_inches="tight")
     plt.gcf().clear()
+
 
 # ------------------------------------------------------------------------------#
 
@@ -244,13 +272,12 @@ def main():
     }
     grids_label = {"grid_0": "coarse", "grid_1": "medium", "grid_2": "fine"}
 
+    folder_in = master_folder
+    folder_out = folder_in + "img/"
 
     for grid_name, grid in grids.items():
         grid_label = grids_label[grid_name]
         for simul in np.arange(num_simul):
-
-            folder_in = master_folder
-            folder_out = folder_in + "img/"
 
             title = ["avg $\\theta$", grid_label, simul]
             ylabel = "\\overline{\\theta}"
@@ -590,7 +617,7 @@ def main():
                         color = "r"
                     else:
                         color = "b"
-                    plot_single(data, label[method], title, ylabel=ylabel, color=color)
+                    plot_single(data, label[method], title, ylabel=ylabel, color=color, do_legend=True)
 
                 # save
                 name = grid_label + "_outflow_star_" + str(simul)
@@ -680,6 +707,20 @@ def main():
 
         name = grid_label + "_num_dof_T"
         save_single(name, folder_out)
+
+        ########
+
+    methods = methods_alessio + methods_stefano_1 + methods_stefano_2
+    num_methods = len(methods)
+
+    for method in methods:
+        plot_legend(label[method], num_methods)
+
+    name = "label"
+    save_label(name, folder_out)
+    full_name = folder_out + name + ".pdf"
+    os.system("pdfcrop --margins '0 -300 0 0' " + full_name + " " + full_name)
+    os.system("pdfcrop " + full_name + " " + full_name)
 
 # ------------------------------------------------------------------------------#
 

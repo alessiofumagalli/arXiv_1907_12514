@@ -3,63 +3,52 @@ from shutil import copyfile
 folder_src = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/dfn_transport/tipetut++/Results/example1/img/"
 folder_dist = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/dfn_transport/tipetut++/Article/Parts/Images/"
 
-# the number of cells
-grid = [0, 1, 2]
-grids_label = {0: "coarse", 1: "medium", 2: "fine"}
+figures = [
+"example1_coarse_cot_avg_0_frac_0.pdf",
+"example1_coarse_cot_avg_0_frac_1.pdf",
+"example1_coarse_cot_avg_10_frac_0.pdf",
+"example1_coarse_cot_avg_10_frac_1.pdf",
+"example1_coarse_cot_avg_20_frac_0.pdf",
+"example1_coarse_cot_avg_20_frac_1.pdf",
+"example1_coarse_cot_max_0_frac_0.pdf",
+"example1_coarse_cot_max_10_frac_0.pdf",
+"example1_coarse_cot_max_20_frac_0.pdf",
+"example1_coarse_cot_min_0_frac_0.pdf",
+"example1_coarse_cot_min_10_frac_0.pdf",
+"example1_coarse_cot_min_20_frac_0.pdf",
+"example1_coarse_mismatch_OPTfem_0.pdf",
+"example1_coarse_mismatch_OPTfem_10.pdf",
+"example1_coarse_mismatch_OPTfem_20.pdf",
+"example1_coarse_mismatch_OPTxfem_0.pdf",
+"example1_coarse_mismatch_OPTxfem_10.pdf",
+"example1_coarse_mismatch_OPTxfem_20.pdf",
+"example1_coarse_num_cells.pdf",
+"example1_coarse_num_dof_F.pdf",
+"example1_coarse_num_dof_T.pdf",
+"example1_coarse_outflow_0.pdf",
+"example1_coarse_outflow_10.pdf",
+"example1_coarse_outflow_20.pdf",
+"example1_coarse_outflow_star_19.pdf",
+"example1_coarse_outflow_star_20.pdf",
+"example1_fine_cot_avg_0_frac_0.pdf",
+"example1_fine_cot_avg_0_frac_1.pdf",
+"example1_fine_cot_avg_10_frac_0.pdf",
+"example1_fine_cot_avg_10_frac_1.pdf",
+"example1_fine_cot_avg_20_frac_0.pdf",
+"example1_fine_cot_avg_20_frac_1.pdf",
+"example1_fine_cot_max_0_frac_0.pdf",
+"example1_fine_cot_max_10_frac_0.pdf",
+"example1_fine_cot_max_20_frac_0.pdf",
+"example1_fine_cot_min_0_frac_0.pdf",
+"example1_fine_cot_min_10_frac_0.pdf",
+"example1_fine_cot_min_20_frac_0.pdf",
+"example1_fine_num_cells.pdf",
+"example1_fine_num_dof_F.pdf",
+"example1_fine_num_dof_T.pdf",
+"example1_fine_outflow_0.pdf",
+"example1_fine_outflow_10.pdf",
+"example1_fine_outflow_20.pdf",
+"label.pdf",]
 
-for g in grid:
-    name_src = grids_label[g] + "_num_cells.png"
-    name_dist = "example1_" + name_src
-    copyfile(folder_src + name_src, folder_dist + name_dist)
-
-# outflow
-grid = [0, 1, 2]
-config = [0, 10, 20]
-
-for g in grid:
-    for c in config:
-        name_src = grids_label[g] + "_outflow_" + str(c) + ".png"
-        name_dist = "example1_" + name_src
-        copyfile(folder_src + name_src, folder_dist + name_dist)
-
-# avgerage temperature
-grid = [0, 1, 2]
-config = [0, 10, 20]
-frac = [0]
-
-for g in grid:
-    for c in config:
-        for f in frac:
-            name_src = (
-                grids_label[g] + "_cot_avg_" + str(c) + "_frac_" + str(f) + ".png"
-            )
-            name_dist = "example1_" + name_src
-            copyfile(folder_src + name_src, folder_dist + name_dist)
-
-# minimum temperature
-grid = [0, 1, 2]
-config = [0, 10, 20]
-frac = [0]
-
-for g in grid:
-    for c in config:
-        for f in frac:
-            name_src = (
-                grids_label[g] + "_cot_min_" + str(c) + "_frac_" + str(f) + ".png"
-            )
-            name_dist = "example1_" + name_src
-            copyfile(folder_src + name_src, folder_dist + name_dist)
-
-# maximum temperature
-grid = [0, 1, 2]
-config = [0, 10, 20]
-frac = [0]
-
-for g in grid:
-    for c in config:
-        for f in frac:
-            name_src = (
-                grids_label[g] + "_cot_max_" + str(c) + "_frac_" + str(f) + ".png"
-            )
-            name_dist = "example1_" + name_src
-            copyfile(folder_src + name_src, folder_dist + name_dist)
+for figure in figures:
+    copyfile(folder_src + figure, folder_dist + figure)
