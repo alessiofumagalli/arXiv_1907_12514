@@ -105,8 +105,8 @@ def main():
             gb.compute_geometry()
             gb.assign_node_ordering()
 
-            if discr_key == "MVEM":
-                pp.coarsening.coarsen(gb, "by_volume")
+            #if discr_key == "MVEM":
+            #    pp.coarsening.coarsen(gb, "by_volume")
 
             domain = gb.bounding_box(as_dict=True)
 
