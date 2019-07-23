@@ -10,7 +10,7 @@ plt.rc("font", family="serif")
 plt.rc("font", size=15)
 
 
-def plot_single(file_name, legend, title, **kwargs):
+def plot_production(file_name, legend, title, **kwargs):
 
     data = np.loadtxt(file_name, delimiter=",")
     reference = kwargs.get("reference", None)
@@ -41,7 +41,7 @@ def plot_single(file_name, legend, title, **kwargs):
         else:
             plt.plot(data[:, 0], data[:, 1], label=legend, alpha=kwargs.get("alpha", 1), color=color)
 
-    plt.title(title)
+    plt.title("avg $\\theta$ at outflow on " + title)
     plt.xlabel("$t$")
     ylabel = "$" + kwargs.get("ylabel", "\\theta") + "$"
     plt.ylabel(ylabel)
@@ -116,14 +116,14 @@ def plot_mismatch(file_name, title, num_traces, **kwargs):
         ax.set_ylim(ylim)
 
     plt_title = (
-        title[0]
+        "mismatch on"
         + " "
-        + title[1]
+        + title[0]
         + " for "
-        + title[2]
+        + title[1]
         + " - "
         + " $C$"
-        + str(title[3])
+        + str(title[2])
     )
     plt.title(plt_title)
     plt.xlabel("$t$")
@@ -475,8 +475,8 @@ def main():
 
            ###########
 
-            title = "production on " + grid_label + " - $C$" + str(simul)
-            ylabel = "\\Pi^{\\rm outflow}"
+            title = grid_label + " - $C$" + str(simul)
+            ylabel = "\\overline{\\theta}^{\\rm outflow}"
 
             # Reference
             data = (
@@ -489,7 +489,7 @@ def main():
                 + "_big"
                 + ".csv"
             )
-            plot_single(data, None, title, reference=reference[grid_name], ylabel=ylabel)
+            plot_production(data, None, title, reference=reference[grid_name], ylabel=ylabel)
 
             # Alessio
             for method in methods_alessio:
@@ -503,7 +503,7 @@ def main():
                     + grid[0]
                     + ".csv"
                 )
-                plot_single(data, label[method], title, ylabel=ylabel)
+                plot_production(data, label[method], title, ylabel=ylabel)
 
             # Stefano
             for method in methods_stefano_1:
@@ -518,7 +518,7 @@ def main():
                     + grid[1]
                     + ".csv"
                 )
-                plot_single(data, label[method], title, ylabel=ylabel)
+                plot_production(data, label[method], title, ylabel=ylabel)
 
             for method in methods_stefano_2:
                 data = (
@@ -532,7 +532,7 @@ def main():
                     + grid[2]
                     + ".csv"
                 )
-                plot_single(data, label[method], title, ylabel=ylabel)
+                plot_production(data, label[method], title, ylabel=ylabel)
 
             # save
             name = grid_label + "_outflow_" + str(simul)
@@ -542,8 +542,8 @@ def main():
 
             if grid_name == "grid_0":
 
-                title = "production on " + grid_label + " - $C$" + str(simul)
-                ylabel = "\\Pi^{\\rm outflow}"
+                title = grid_label + " - $C$" + str(simul)
+                ylabel = "\\overline{\\theta}^{\\rm outflow}"
 
                 # Reference
                 data = (
@@ -556,7 +556,7 @@ def main():
                     + "_big"
                     + ".csv"
                 )
-                plot_single(data, None, title, reference=reference[grid_name], ylabel=ylabel)
+                plot_production(data, None, title, reference=reference[grid_name], ylabel=ylabel)
 
                 # Alessio
                 for method in methods_alessio:
@@ -570,7 +570,7 @@ def main():
                         + grid[0]
                         + ".csv"
                     )
-                    plot_single(data, None, title, ylabel=ylabel, alpha=0.5, color="gray")
+                    plot_production(data, None, title, ylabel=ylabel, alpha=0.5, color="gray")
 
                 # Stefano
                 for method in methods_stefano_1:
@@ -585,7 +585,7 @@ def main():
                         + grid[1]
                         + ".csv"
                     )
-                    plot_single(data, None, title, ylabel=ylabel, alpha=0.5, color="gray")
+                    plot_production(data, None, title, ylabel=ylabel, alpha=0.5, color="gray")
 
                 for method in methods_stefano_2:
                     data = (
@@ -599,7 +599,7 @@ def main():
                         + grid[2]
                         + ".csv"
                     )
-                    plot_single(data, None, title, ylabel=ylabel, alpha=0.5, color="gray")
+                    plot_production(data, None, title, ylabel=ylabel, alpha=0.5, color="gray")
 
                 for method in methods_stefano_3:
                     data = (
@@ -617,7 +617,7 @@ def main():
                         color = "r"
                     else:
                         color = "b"
-                    plot_single(data, label[method], title, ylabel=ylabel, color=color, do_legend=True)
+                    plot_production(data, label[method], title, ylabel=ylabel, color=color, do_legend=True)
 
                 # save
                 name = grid_label + "_outflow_star_" + str(simul)
@@ -629,7 +629,7 @@ def main():
 
             # Stefano
             for method in methods_stefano_1:
-                title = ["mismatch", grid_label, label[method], simul]
+                title = [grid_label, label[method], simul]
 
                 data = (
                     folder_in

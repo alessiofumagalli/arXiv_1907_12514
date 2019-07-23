@@ -9,24 +9,25 @@ plt.rc("font", family="serif")
 plt.rc("font", size=15)
 
 
-def plot_single(file_name, legend, title, **kwargs):
+def plot_production(file_name, legend, title, **kwargs):
 
     data = np.loadtxt(file_name, delimiter=",")
     reference = kwargs.get("reference", None)
+    length = kwargs.get("length", 1.)
 
     fig = plt.figure(0)
     ax = fig.add_subplot(111)
 
     # if the data is a reference
     if reference:
-        data_p = data[:, 1] + data[:, 1] * reference / 100
+        data_p = (data[:, 1] + data[:, 1] * reference / 100) / length
         plt.plot(data[:, 0], data_p, label=legend, linestyle="--", color="gray")
         text = "ref + " + str(reference) + "\%"
         pos = (np.median(data[:, 0]), np.median(data_p))
         pos_t = (pos[0], pos[1]+5*pos[1]/100)
         ax.annotate(text, xy=pos, xytext=pos_t)
 
-        data_m = data[:, 1] - data[:, 1] * reference / 100
+        data_m = (data[:, 1] - data[:, 1] * reference / 100) / length
         plt.plot(data[:, 0], data_m, label=legend, linestyle="--", color="gray")
         text = "ref - " + str(reference) + "\%"
         pos = (np.median(data[:, 0]), np.median(data_m))
@@ -36,11 +37,11 @@ def plot_single(file_name, legend, title, **kwargs):
     else:
         color = kwargs.get("color", None)
         if color is None:
-            plt.plot(data[:, 0], data[:, 1], label=legend, alpha=kwargs.get("alpha", 1))
+            plt.plot(data[:, 0], data[:, 1]/length, label=legend, alpha=kwargs.get("alpha", 1))
         else:
-            plt.plot(data[:, 0], data[:, 1], label=legend, alpha=kwargs.get("alpha", 1), color=color)
+            plt.plot(data[:, 0], data[:, 1]/length, label=legend, alpha=kwargs.get("alpha", 1), color=color)
 
-    plt.title(title)
+    plt.title("avg $\\theta$ at outflow on " + title)
     plt.xlabel("$t$")
     ylabel = "$" + kwargs.get("ylabel", "\\theta") + "$"
     plt.ylabel(ylabel)
@@ -104,11 +105,11 @@ def plot_mismatch(file_name, title, num_traces, **kwargs):
         ax.set_ylim(ylim)
 
     plt_title = (
-        title[0]
+        "mismatch on"
         + " "
-        + title[1]
+        + title[0]
         + " for "
-        + title[2]
+        + title[1]
     )
     plt.title(plt_title)
     plt.xlabel("$t$")
@@ -305,8 +306,9 @@ def main():
 
         ###########
 
-        title = "production on " + grid_label
-        ylabel = "\\Pi^{\\rm outflow}"
+        title = grid_label
+        ylabel = "\\overline{\\theta}^{\\rm outflow}"
+        length = 0.293956
 
         if if_reference:
             # Reference
@@ -318,21 +320,21 @@ def main():
                 + "_production_big"
                 + ".csv"
             )
-            plot_single(data, None, title, reference=reference[grid_name], ylabel=ylabel)
+            plot_production(data, None, title, reference=reference[grid_name], ylabel=ylabel, length=length)
 
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "production_" + grid[0] + ".csv"
-            plot_single(data, label[method], title, ylabel=ylabel)
+            plot_production(data, label[method], title, ylabel=ylabel, length=length)
 
         # Stefano
         for method in methods_stefano_1:
             data = folder_in + method + "/" + method + "_production_" + grid[1] + ".csv"
-            plot_single(data, label[method], title, ylabel=ylabel)
+            plot_production(data, label[method], title, ylabel=ylabel, length=length)
 
         for method in methods_stefano_2:
             data = folder_in + method + "/" + method + "_production_" + grid[2] + ".csv"
-            plot_single(data, label[method], title, ylabel=ylabel)
+            plot_production(data, label[method], title, ylabel=ylabel, length=length)
 
         # save
         name = grid_label + "_outflow"
@@ -344,7 +346,7 @@ def main():
         # Stefano
         for method in methods_stefano_1:
 
-            title = ["mismatch", grid_label, label[method]]
+            title = [grid_label, label[method]]
             ylim = [1e-10, 1e-3]
 
             data = (

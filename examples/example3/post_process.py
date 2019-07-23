@@ -62,7 +62,7 @@ def read_csv(file_in, fields=None):
             reader = csv.reader(csvfile)
             data = list(reader)
 
-    return data
+    return np.array(data, dtype=np.float)
 
 #------------------------------------------------------------------------------#
 
