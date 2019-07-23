@@ -351,11 +351,16 @@ def advdiff(gb, discr, param, bc_flag):
         d[pp.PRIMARY_VARIABLES] = {variable: {"cells": 1}}
         if g.dim == gb.dim_max():
             d[pp.DISCRETIZATION] = {
-                variable: {adv_id: discr_adv, diff_id: discr_diff, mass_id: discr_mass, src_id: discr_src}
+                variable: {adv_id: discr_adv,
+                diff_id: discr_diff,
+                mass_id: discr_mass,
+                src_id: discr_src}
             }
         else:
             d[pp.DISCRETIZATION] = {
-                variable: {adv_id: discr_adv_interface, diff_id: discr_diff_interface, mass_id: discr_mass_interface}
+                variable: {adv_id: discr_adv_interface,
+                diff_id: discr_diff_interface,
+                mass_id: discr_mass_interface}
             }
 
     for e, d in gb.edges():
@@ -418,7 +423,7 @@ def advdiff(gb, discr, param, bc_flag):
     assembler.distribute_variable(x)
     for g, d in gb:
         if g.dim == gb.dim_max():
-            d[variable] = param.get("init_trans", 0) * np.ones(g.num_cells)
+            d[pp.STATE][variable] = param.get("init_trans", 0) * np.ones(g.num_cells)
 
     x = assembler.merge_variable(variable)
 
