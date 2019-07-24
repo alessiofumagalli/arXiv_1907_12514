@@ -41,7 +41,7 @@ def plot_production(file_name, legend, title, **kwargs):
         else:
             plt.plot(data[:, 0], data[:, 1], label=legend, alpha=kwargs.get("alpha", 1), color=color)
 
-    plt.title("avg $\\theta$ at outflow on " + title)
+    plt.title("averaged $\\theta$ at outflow on " + title)
     plt.xlabel("$t$")
     ylabel = "$" + kwargs.get("ylabel", "\\theta") + "$"
     plt.ylabel(ylabel)
@@ -248,7 +248,7 @@ def main():
     num_frac = 3
     num_traces = 2
 
-    master_folder = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/dfn_transport/tipetut++/Results/example1/"
+    master_folder = "./"
 
     methods_stefano_1 = ["OPTxfem", "OPTfem"]
     methods_stefano_2 = ["GCmfem"]
@@ -279,8 +279,8 @@ def main():
         grid_label = grids_label[grid_name]
         for simul in np.arange(num_simul):
 
-            title = ["avg $\\theta$", grid_label, simul]
-            ylabel = "\\overline{\\theta}"
+            title = ["averaged $\\theta$", grid_label, simul]
+            ylabel = "\\langle {\\theta} \\rangle"
 
             # Reference
             data = (
@@ -476,7 +476,7 @@ def main():
            ###########
 
             title = grid_label + " - $C$" + str(simul)
-            ylabel = "\\overline{\\theta}^{\\rm outflow}"
+            ylabel = "\\langle {\\theta} \\rangle_{\\rm outflow}"
 
             # Reference
             data = (
@@ -543,7 +543,7 @@ def main():
             if grid_name == "grid_0":
 
                 title = grid_label + " - $C$" + str(simul)
-                ylabel = "\\overline{\\theta}^{\\rm outflow}"
+                ylabel = "\\langle {\\theta} \\rangle_{\\rm outflow}"
 
                 # Reference
                 data = (

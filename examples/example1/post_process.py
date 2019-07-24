@@ -139,8 +139,7 @@ def main():
 
     grids = ["1k", "3k", "10k"]
 
-    folder_master = "/home/elle/tmp/tipetut++/case1/"
-    #folder_master = "./"
+    folder_master = "./"
     folder_master_out = "./CSV/"
     methods = ["MVEM", "Tpfa", "RT0"]
 

@@ -41,7 +41,7 @@ def plot_production(file_name, legend, title, **kwargs):
         else:
             plt.plot(data[:, 0], data[:, 1]/length, label=legend, alpha=kwargs.get("alpha", 1), color=color)
 
-    plt.title("avg $\\theta$ at outflow on " + title)
+    plt.title("averaged $\\theta$ at outflow on " + title)
     plt.xlabel("$t$")
     ylabel = "$" + kwargs.get("ylabel", "\\theta") + "$"
     plt.ylabel(ylabel)
@@ -173,7 +173,7 @@ def main():
     num_frac = 10
     num_traces = 14
 
-    master_folder = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/dfn_transport/tipetut++/Results/example2/"
+    master_folder = "./"
 
     methods_stefano_1 = ["OPTxfem", "OPTfem"]
     methods_stefano_2 = ["GCmfem"]
@@ -201,8 +201,8 @@ def main():
         folder_in = master_folder
         folder_out = folder_in + "img/"
 
-        title = ["avg $\\theta$", grid_label]
-        ylabel = "\\overline{\\theta}"
+        title = ["averaged $\\theta$", grid_label]
+        ylabel = "\\langle {\\theta} \\rangle"
 
         if if_reference:
             # Reference
@@ -307,7 +307,7 @@ def main():
         ###########
 
         title = grid_label
-        ylabel = "\\overline{\\theta}^{\\rm outflow}"
+        ylabel = "\\langle {\\theta} \\rangle_{\\rm outflow}"
         length = 0.293956
 
         if if_reference:

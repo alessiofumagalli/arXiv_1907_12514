@@ -16,7 +16,7 @@ def plot_production(file_name, legend, title, **kwargs):
 
     plt.figure(0)
     plt.plot(data[:, 0], fct(data[:, 1]), label=legend)
-    plt.title("avg $\\theta$ at outflow on " + title)
+    plt.title("averaged $\\theta$ at outflow on " + title)
     plt.xlabel("$t$")
     ylabel = "$" + kwargs.get("ylabel", "\\theta") + "$"
     plt.ylabel(ylabel)
@@ -83,7 +83,7 @@ def main():
 
     num_frac = 89-7
 
-    master_folder = "/home/elle/Dropbox/Work/PresentazioniArticoli/2019/Articles/dfn_transport/tipetut++/Results/example3/"
+    master_folder = "./"
 
     methods_stefano = ["OPTfem", "OPTxfem", "GCmfem"]
     methods_alessio = ["MVEM_UPWIND", "Tpfa_UPWIND", "RT0_UPWIND"]
@@ -105,8 +105,8 @@ def main():
         folder_in = master_folder
         folder_out = folder_in + "img/"
 
-        title = ["avg $\\theta$", case_label]
-        ylabel = "\\overline{\\theta}"
+        title = ["averaged $\\theta$", case_label]
+        ylabel = "\\langle {\\theta} \\rangle"
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "Cmean_" + case[0] + ".csv"
@@ -161,7 +161,7 @@ def main():
         ###########
 
         title = case_label
-        ylabel = "\\overline{\\theta}^{\\rm outflow}"
+        ylabel = "\\langle {\\theta} \\rangle_{\\rm outflow}"
 
         # Alessio
         if case_name == "case_0":
