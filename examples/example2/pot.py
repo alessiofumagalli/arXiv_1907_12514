@@ -201,7 +201,7 @@ def main():
         folder_in = master_folder
         folder_out = folder_in + "img/"
 
-        title = ["averaged $\\theta$", grid_label]
+        title = ["averaged $\\theta$", "on " + grid_label + " grid"]
         ylabel = "\\langle {\\theta} \\rangle"
 
         if if_reference:
@@ -236,7 +236,7 @@ def main():
 
         ###########
 
-        title = ["min $\\theta$", grid_label]
+        title = ["min $\\theta$", "on " + grid_label + " grid"]
         ylabel = "\\min {\\theta}"
 
         # Reference
@@ -271,7 +271,7 @@ def main():
 
         ###########
 
-        title = ["max $\\theta$", grid_label]
+        title = ["max $\\theta$", "on " + grid_label + " grid"]
         ylabel = "\\max {\\theta}"
 
         # Reference
@@ -306,7 +306,7 @@ def main():
 
         ###########
 
-        title = grid_label
+        title = grid_label + " grid"
         ylabel = "\\langle {\\theta} \\rangle_{\\rm outflow}"
         length = 0.293956
 
@@ -346,7 +346,7 @@ def main():
         # Stefano
         for method in methods_stefano_1:
 
-            title = [grid_label, label[method]]
+            title = [grid_label + " grid", label[method]]
             ylim = [1e-10, 1e-3]
 
             data = (

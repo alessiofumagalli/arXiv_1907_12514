@@ -105,7 +105,7 @@ def main():
         folder_in = master_folder
         folder_out = folder_in + "img/"
 
-        title = ["averaged $\\theta$", case_label]
+        title = ["averaged $\\theta$", "on " + case_label]
         ylabel = "\\langle {\\theta} \\rangle"
         # Alessio
         for method in methods_alessio:
@@ -123,7 +123,7 @@ def main():
 
         ###########
 
-        title = ["min $\\theta$", case_label]
+        title = ["min $\\theta$", "on " + case_label]
         ylabel = "\\min {\\theta}"
         # Alessio
         for method in methods_alessio:
@@ -141,7 +141,7 @@ def main():
 
         ###########
 
-        title = ["max $\\theta$", case_label]
+        title = ["max $\\theta$", "on " + case_label]
         ylabel = "\\max {\\theta}"
 
         # Alessio

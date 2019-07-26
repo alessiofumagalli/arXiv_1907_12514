@@ -41,7 +41,7 @@ def plot_production(file_name, legend, title, **kwargs):
         else:
             plt.plot(data[:, 0], data[:, 1], label=legend, alpha=kwargs.get("alpha", 1), color=color)
 
-    plt.title("averaged $\\theta$ at outflow on " + title)
+    plt.title("averaged $\\theta$ at outflow for " + title)
     plt.xlabel("$t$")
     ylabel = "$" + kwargs.get("ylabel", "\\theta") + "$"
     plt.ylabel(ylabel)
@@ -250,6 +250,7 @@ def main():
 
     master_folder = "./"
 
+
     methods_stefano_1 = ["OPTxfem", "OPTfem"]
     methods_stefano_2 = ["GCmfem"]
     methods_stefano_3 = ["OPTxfemG", "OPTfemG"]
@@ -279,7 +280,7 @@ def main():
         grid_label = grids_label[grid_name]
         for simul in np.arange(num_simul):
 
-            title = ["averaged $\\theta$", grid_label, simul]
+            title = ["averaged $\\theta$", "on " + grid_label + " grid", simul]
             ylabel = "\\langle {\\theta} \\rangle"
 
             # Reference
@@ -344,7 +345,7 @@ def main():
 
             ###########
 
-            title = ["min $\\theta$", grid_label, simul]
+            title = ["min $\\theta$", "on " + grid_label + " grid", simul]
             ylabel = "\\min {\\theta}"
 
             # Reference
@@ -410,7 +411,7 @@ def main():
 
             ###########
 
-            title = ["max $\\theta$", grid_label, simul]
+            title = ["max $\\theta$", "on " + grid_label + " grid", simul]
             ylabel = "\\max {\\theta}"
 
             # Reference
@@ -475,7 +476,7 @@ def main():
 
            ###########
 
-            title = grid_label + " - $C$" + str(simul)
+            title = grid_label + " grid - $C$" + str(simul)
             ylabel = "\\langle {\\theta} \\rangle_{\\rm outflow}"
 
             # Reference
@@ -542,7 +543,7 @@ def main():
 
             if grid_name == "grid_0":
 
-                title = grid_label + " - $C$" + str(simul)
+                title = grid_label + " grid - $C$" + str(simul)
                 ylabel = "\\langle {\\theta} \\rangle_{\\rm outflow}"
 
                 # Reference
@@ -629,7 +630,7 @@ def main():
 
             # Stefano
             for method in methods_stefano_1:
-                title = [grid_label, label[method], simul]
+                title = [grid_label + " grid", label[method], simul]
 
                 data = (
                     folder_in
@@ -650,7 +651,7 @@ def main():
 
             ########
 
-        title = "number of cells - " + grid_label
+        title = "number of cells on " + grid_label + " grid"
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "num_cells_" + grid[0] + ".csv"
@@ -670,7 +671,7 @@ def main():
 
         ########
 
-        title = "number of dof flow - " + grid_label
+        title = "number of dof for flow on " + grid_label + " grid"
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "numdofF_" + grid[0] + ".csv"
@@ -690,7 +691,7 @@ def main():
 
         ########
 
-        title = "number of dof transport - " + grid_label
+        title = "number of dof for transport on " + grid_label + " grid"
         # Alessio
         for method in methods_alessio:
             data = folder_in + method + "/" + "numdofT_" + grid[0] + ".csv"
